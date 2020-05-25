@@ -1,0 +1,350 @@
+﻿.card {
+    display: inline-block;
+}
+
+    .card.card-selected {
+        outline: 2px solid yellow;
+    }
+
+.normal-cs {
+    width: 71px;
+    height: 97px;
+}
+
+.left-p-c {
+    position: absolute;
+    right: -150px;
+}
+
+.top-p-c {
+    position: absolute;
+    bottom: -150px;
+}
+
+.right-p-c {
+    position: absolute;
+    left: -150px;
+}
+
+.bot-p-c {
+    position: absolute;
+    top: -150px;
+}
+
+.bot-p-np {
+    position: absolute;
+    left: 0;
+    top: -55px;
+}
+
+.empty {
+    background: transparent;
+    border: 0;
+}
+
+.ace_clubs {
+    
+    background: url("../img/windows-playing-cards.png") -2px -1px;
+}
+
+.two_clubs {
+    background: url("../img/windows-playing-cards.png") -75px -1px;
+}
+
+.three_clubs {
+    background: url("../img/windows-playing-cards.png") -148px -1px;
+}
+
+.four_clubs {
+    background: url("../img/windows-playing-cards.png") -220px -1px;
+}
+
+.five_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -294px -1px;
+}
+
+.six_clubs {
+   
+    
+    
+    background: url("../img/windows-playing-cards.png") -366px -1px;
+}
+
+.seven_clubs {
+    
+    
+    
+    background: url("../img/windows-playing-cards.png") -440px -1px;
+}
+
+.eight_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -512px -1px;
+}
+
+.nine_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -586px -1px;
+}
+
+.ten_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -658px -1px;
+}
+
+.jack_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -732px -1px;
+}
+
+.queen_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -804px -1px;
+}
+
+.king_clubs {
+    
+    
+    background: url("../img/windows-playing-cards.png") -878px -1px;
+}
+
+.ace_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -2px -99px;
+}
+
+.two_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -75px -99px;
+}
+
+.three_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -148px -99px;
+}
+
+.four_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -220px -99px;
+}
+
+.five_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -294px -99px;
+}
+
+.six_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -366px -99px;
+}
+
+.seven_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -440px -99px;
+}
+
+.eight_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -512px -99px;
+}
+
+.nine_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -586px -99px;
+}
+
+.ten_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -658px -99px;
+}
+
+.jack_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -732px -99px;
+}
+
+.queen_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -804px -99px;
+}
+
+.king_hearts {
+    
+    
+    background: url("../img/windows-playing-cards.png") -878px -99px;
+}
+
+.ace_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -2px -197px;
+}
+
+.two_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -75px -197px;
+}
+
+.three_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -148px -197px;
+}
+
+.four_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -220px -197px;
+}
+
+.five_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -294px -197px;
+}
+
+.six_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -366px -197px;
+}
+
+.seven_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -440px -197px;
+}
+
+.eight_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -512px -197px;
+}
+
+.nine_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -586px -197px;
+}
+
+.ten_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -658px -197px;
+}
+
+.jack_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -732px -197px;
+}
+
+.queen_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -804px -197px;
+}
+
+.king_spades {
+    
+    
+    background: url("../img/windows-playing-cards.png") -878px -197px;
+}
+
+.ace_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -2px -295px;
+}
+
+.two_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -75px -295px;
+}
+
+.three_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -148px -295px;
+}
+
+.four_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -220px -295px;
+}
+
+.five_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -294px -295px;
+}
+
+.six_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -366px -295px;
+}
+
+.seven_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -440px -295px;
+}
+
+.eight_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -512px -295px;
+}
+
+.nine_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -586px -295px;
+}
+
+.ten_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -658px -295px;
+}
+
+.jack_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -732px -295px;
+}
+
+.queen_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -804px -295px;
+}
+
+.king_diamonds {
+    
+    
+    background: url("../img/windows-playing-cards.png") -878px -295px;
+}

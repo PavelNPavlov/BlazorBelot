@@ -1,0 +1,195 @@
+﻿@page "/"
+@page "/test/{TestTab}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using CardGames.Models.Lobbies
+@using CardGames.Shared
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
+
+
+@if (!isInLobby)
+{
+    <div class="form-group">
+        <label>
+            User:
+            <input @bind="userInput" />
+        </label>
+    </div>
+}
+
+
+
+<hr>
+
+@*<ul id="messagesList">
+        @foreach (var message in messages)
+        {
+            <li>@message</li>
+        }
+    </ul>*@
+@if (isInLobby)
+{
+    <h2>Joined: @joinedLobby </h2>
+    <div class="col-md-3"><button @onclick="(e=>Leave(joinedLobby))">Leave</button></div>
+
+    if (IsHost)
+    {
+        <h3>(Host)</h3>
+        <div class="col-md-3"><button @onclick="(e=>StartGame(joinedLobby))" disabled="@(!CanStartGame)">Start Game</button></div>
+        <div class="col-md-3"><button @onclick="(e=>AddBot())" disabled="@(CanStartGame || JoinedLobbyData.LobbyUsers.Count == 4)">AddBot</button></div>
+    }
+}
+<ul>
+    @foreach (var item in lobbies)
+    {
+        <li class="row">
+            <div class="col-md-3">@item.Name</div>
+            <div class="col-md-3">@item.Type</div>
+            <div class="col-md-3">@item.LobbyUsers.Count/@item.MaxCount</div>
+            <div class="col-md-3"><button @onclick="(e=>Join(item.Name, item.Type))" disabled="@(!IsConnected || isInLobby || item.LobbyUsers.Count==item.MaxCount)">Join</button></div>
+        </li>
+    }
+</ul>
+
+
+
+@code {
+    private HubConnection hubConnection;
+    private List<LobbyData> lobbies = new List<LobbyData>();
+    private string userInput;
+    private string joinedLobbyType;
+    private string isHost;
+
+    public bool isInLobby;
+    public string joinedLobby;
+
+    private static Random rng = new Random();
+
+
+    private LobbyData JoinedLobbyData
+    {
+        get { return this.lobbies.FirstOrDefault(x => x.Name == joinedLobby); }
+    }
+
+    public bool IsHost => JoinedLobbyData.HostId == hubConnection.ConnectionId;
+
+    public bool CanStartGame => JoinedLobbyData.LobbyUsers.Count == JoinedLobbyData.MaxCount;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/lobbies"))
+        .Build();
+
+        hubConnection.On<List<LobbyData>>(ChannelConstants.LobbiesDataChannel, (lobbies) =>
+        {
+            this.lobbies.Clear();
+            this.lobbies.AddRange(lobbies);
+            this.StateHasChanged();
+        });
+
+        hubConnection.On<LobbyConnectResponse>(ChannelConstants.LobbyConnectionAnswer, (res) =>
+        {
+            isInLobby = res.Succeded;
+
+            if (res.Succeded)
+            {
+                joinedLobby = res.LobbyName;
+            }
+            else
+            {
+                joinedLobbyType = string.Empty;
+            }
+        });
+
+        hubConnection.On<LobbyDisconnectResponse>(ChannelConstants.LobbyDisconectAnswer, (res) =>
+        {
+            isInLobby = !res.Succeded;
+
+            if (res.Succeded)
+            {
+                joinedLobby = string.Empty;
+                joinedLobbyType = string.Empty;
+            }
+
+        });
+
+        hubConnection.On(ChannelConstants.GameStarting, () =>
+        {
+            var user = this.JoinedLobbyData.LobbyUsers.FirstOrDefault(x => x.Id == hubConnection.ConnectionId);
+            var seat = this.JoinedLobbyData.LobbyUsers.IndexOf(user);
+            var url = $"/belot/{joinedLobby}/{userInput}/{seat}";
+
+            NavigationManager.NavigateTo(url);
+        });
+
+        await hubConnection.StartAsync();
+
+        await hubConnection.SendAsync("GetLobbies", "Belot");
+
+        this.userInput = $"P{rng.Next(100)}";
+
+        //await Join("Lobby1", "Belot");
+
+        //Console.WriteLine("Test");
+        //Console.WriteLine(TestTab);
+
+        //if(string.IsNullOrEmpty(TestTab) )
+        //{
+
+        //    await JSRuntime.InvokeAsync<object>("open", "/test/1", "_blank");
+
+        //}
+
+        //if (TestTab == "1")
+        //{
+
+        //    await JSRuntime.InvokeAsync<object>("open", "/test/2", "_blank");
+
+        //}
+
+        //if (TestTab == "2")
+        //{
+
+        //    await JSRuntime.InvokeAsync<object>("open", "/test/3", "_blank");
+
+        //}
+
+
+
+    }
+
+    Task AddBot()
+    {
+        return hubConnection.SendAsync("AddBotToLobby", joinedLobby);
+    }
+
+    Task Join(string name, string type)
+    {
+        joinedLobbyType = type;
+        var lobbyJoinRequest = new LobbyConnectRequest() { UserName = userInput, LobbyName = name };
+        return hubConnection.SendAsync("JoinLobby", lobbyJoinRequest);
+    }
+
+    Task Leave(string name)
+    {
+        var type = joinedLobbyType;
+        joinedLobbyType = string.Empty;
+        var lobbyJoinRequest = new LobbyDisconnectRequest() { LobbyName = name };
+
+        return hubConnection.SendAsync("LeaveLobby", lobbyJoinRequest);
+    }
+
+    Task StartGame(string lobbyName)
+    {
+        return hubConnection.SendAsync("StartGame", lobbyName);
+    }
+
+
+    public bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    [Parameter]
+    public string TestTab { get; set; }
+}

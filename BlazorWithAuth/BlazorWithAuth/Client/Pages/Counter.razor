@@ -1,0 +1,69 @@
+﻿@page "/counter"
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Threading;
+@using CardGames.Models.Stream;
+@inject NavigationManager NavigationManager
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+<p>Current count: @test</p>
+@*<p>Current str: @img</p>*@
+
+
+
+<img src="data:image;base64, @img" style="width:300px; height:300px" />
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+    private HubConnection hubConnection;
+    private DateTime test;
+    private string img;
+    private DateTime lastFrameTimeStamp;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/stream"))
+        .Build();
+
+        await hubConnection.StartAsync();
+
+        lastFrameTimeStamp = DateTime.UtcNow;
+
+        var cancellationTokenSource = new CancellationTokenSource();
+        var channel = await hubConnection.StreamAsChannelAsync<StreamFrame>(
+            "Counter", 10, 1, cancellationTokenSource.Token);
+
+        // Wait asynchronously for data to become available
+        while (await channel.WaitToReadAsync())
+        {
+            //Console.WriteLine("Test");
+            // Read all currently available data synchronously, before waiting for more data
+            while (channel.TryRead(out var count))
+            {
+                //Console.WriteLine($"{count}");
+                test = count.TimeStamp;
+                img = count.Base64ImageString;
+
+                //Console.WriteLine(img);
+
+                Console.WriteLine((lastFrameTimeStamp - count.TimeStamp).Milliseconds);
+                lastFrameTimeStamp = count.TimeStamp;
+                this.StateHasChanged();
+            }
+        }
+
+        Console.WriteLine("Streaming completed");
+
+
+    }
+
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

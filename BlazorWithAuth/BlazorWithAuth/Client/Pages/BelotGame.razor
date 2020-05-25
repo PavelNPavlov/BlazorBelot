@@ -1,0 +1,480 @@
+﻿@page "/belot/{GameName}/{UserId}/{Seat}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using CardGames.Models.Belot
+@using CardGames.Shared
+@using Newtonsoft.Json
+@inject NavigationManager NavigationManager
+
+<div>
+
+
+    <h3>BelotGame</h3>
+    <div class="row">
+        <div class="col-md-4 white-bg">@(int.Parse(this.Seat)%2 == 0? "Team1" : "Team2")</div>
+        <div class="col-md-4">Set Score: @this.Team1SetScore : @this.Team2SetScore</div>
+        <div class="col-md-4">Game Score: @this.Team1Score : @this.Team2Score </div>
+        @if (this.tableStateVm != null && this.tableStateVm.CurrentRoundState.BidderIndex != -1)
+        {
+            <div class="white-bg">@this.tableStateVm.CurrentRoundState.BidSuit - @this.tableStateVm.PlayerNames[this.tableStateVm.CurrentRoundState.BidderIndex]</div>
+        }
+    </div>
+    <div class="tabel-bg" id="game">
+        <div id="play-area" class="d-flex justify-content-center flex-column align-items-center">
+
+            @if (tableStateVm != null)
+            {
+                <h1 class="p-2">Waiting for @tableStateVm.PlayerInTurnName</h1>
+            }
+
+
+            @*@if (tableStateVm != null)
+            {
+                <div class="p-2">
+                    @for (int i = 0; i < this.tableStateVm.CardsOnTable.Count; i++)
+                    {
+                        var item = this.tableStateVm.CardsOnTable[i];
+
+                        <div class="card @(string.IsNullOrEmpty(item.Value)? "empty":$"{item.Value}_{item.Suit.ToLower()}") normal-cs"> <p class="card-name @(this.tableStateVm.TopCardOwner == i ? "top-p":"")">@this.tableStateVm.PlayerNames[i]</p> </div>
+                    }
+                </div>
+            }*@
+        </div>
+        <div class="player-area own-team d-flex justify-content-center flex-column align-items-center" id="top-player">
+            @if (tableStateVm != null)
+            {
+                <div class="@(tableStateVm.TopCardOwner == this.TopPlayerIndex? "card-selected":"") top-p-c card @(string.IsNullOrEmpty(this.tableStateVm.CardsOnTable[this.TopPlayerIndex].Value) ? "empty" : $"{this.Prefix}{this.tableStateVm.CardsOnTable[this.TopPlayerIndex].Value}_{this.tableStateVm.CardsOnTable[this.TopPlayerIndex].Suit.ToLower()}") @($"{this.Prefix}normal-cs")"> </div>
+            }
+            <h4 class="p-2 white-bg">
+                @this.TopPlayerName @if (this.tableStateVm != null)
+                {@(this.tableStateVm.DealerIndex ==this.TopPlayerIndex? "(D)":"" )}
+            </h4>
+            @if (this.tableStateVm != null && !string.IsNullOrEmpty(this.tableStateVm.PlayerAnnThisHand[this.TopPlayerIndex]))
+            {
+                <div class="sp-bb @(this.tableStateVm.TopCardOwner == this.TopPlayerIndex ? "top-p":"")">
+                    <p>@this.tableStateVm.PlayerAnnThisHand[this.TopPlayerIndex]</p>
+                </div>
+            }
+        </div>
+        <div class="player-area own-team d-flex justify-content-center flex-column align-items-center" id="bot-player">
+            @if (tableStateVm != null)
+            {
+                <div class="@(tableStateVm.TopCardOwner == this.BotPlayerIndex? "card-selected":"") bot-p-c card @(string.IsNullOrEmpty(this.tableStateVm.CardsOnTable[this.BotPlayerIndex].Value) ? "empty" : $"{this.Prefix}{this.tableStateVm.CardsOnTable[this.BotPlayerIndex].Value}_{this.tableStateVm.CardsOnTable[this.BotPlayerIndex].Suit.ToLower()}") @($"{this.Prefix}normal-cs")"> </div>
+            }
+            <h4 class="p-2 white-bg bot-p-np">
+                @this.BotPlayerName @if (this.tableStateVm != null)
+                {@(this.tableStateVm.DealerIndex ==this.BotPlayerIndex? "(D)":"" )}
+            </h4>
+            <div class="d-flex justify-content-center flex-row align-items-center" style="margin-bottom: 16px;">
+                @if (playerState != null && playerState.Hand.Count > 0)
+                {
+                    foreach (var item in playerState.Hand)
+                    {
+                        <div @onclick="@(e=>PlayCard(item))" class="card @($"{this.Prefix}{item.Value}_{item.Suit.ToLower()}") @(item.CanPlay?"card-selected":"") @($"{this.Prefix}normal-cs")"></div>
+                    }
+                }
+            </div>
+
+        </div>
+        <div class="player-area other-team player-area d-flex justify-content-center flex-column align-items-center" id="left-player">
+            @if (tableStateVm != null)
+            {
+                <div class="@(tableStateVm.TopCardOwner == this.LeftPlayerIndex? "card-selected":"") left-p-c card @(string.IsNullOrEmpty(this.tableStateVm.CardsOnTable[this.LeftPlayerIndex].Value) ? "empty" : $"{this.Prefix}{this.tableStateVm.CardsOnTable[this.LeftPlayerIndex].Value}_{this.tableStateVm.CardsOnTable[this.LeftPlayerIndex].Suit.ToLower()}") @($"{this.Prefix}normal-cs")"> </div>
+            }
+            <h4 class="p-2 white-bg">
+                @this.LeftPlayerName @if (this.tableStateVm != null)
+                {@(this.tableStateVm.DealerIndex ==this.LeftPlayerIndex? "(D)":"" )}
+            </h4>
+            @if (this.tableStateVm != null && !string.IsNullOrEmpty(this.tableStateVm.PlayerAnnThisHand[this.LeftPlayerIndex]))
+            {
+                <div class="sp-bb @(this.tableStateVm.TopCardOwner == this.LeftPlayerIndex ? "top-p":"")">
+                    <p>@this.tableStateVm.PlayerAnnThisHand[this.LeftPlayerIndex]</p>
+                </div>
+            }
+        </div>
+        <div class="player-area other-team player-area d-flex justify-content-center flex-column align-items-center" id="right-player">
+            @if (tableStateVm != null)
+            {
+                <div class="@(tableStateVm.TopCardOwner == this.RightPlayerIndex? "card-selected":"") right-p-c card @(string.IsNullOrEmpty(this.tableStateVm.CardsOnTable[this.RightPlayerIndex].Value)? "empty":$"{this.Prefix}{this.tableStateVm.CardsOnTable[this.RightPlayerIndex].Value}_{this.tableStateVm.CardsOnTable[this.RightPlayerIndex].Suit.ToLower()}") @($"{this.Prefix}normal-cs")"> </div>
+            }
+            <h4 class="p-2 white-bg">
+                @this.RightPlayerName @if (this.tableStateVm != null)
+                {@(this.tableStateVm.DealerIndex ==this.RightPlayerIndex? "(D)":"" )}
+            </h4>
+            @if (this.tableStateVm != null && !string.IsNullOrEmpty(this.tableStateVm.PlayerAnnThisHand[this.RightPlayerIndex]))
+            {
+                <div class="sp-bb">
+                    <p>@this.tableStateVm.PlayerAnnThisHand[this.RightPlayerIndex]</p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+@if (playerState != null && playerState.ActionRequired == "Bidding")
+{
+    <div class="modal fade show center-modal" id="myModal" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Possilbe Bids</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <ul>
+                        @foreach (var item in this.playerState.PossibleBids)
+                        {
+                            <li><button @onclick="@(e=>Announce(item))">@item</button></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (playerState != null && playerState.PossiblePlayAnnoucements.Count > 0 && this.cardToBePlayed != null)
+{
+    <div class="modal fade show center-modal" id="myModal" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Possilbe Announcments</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <ul>
+                        @foreach (var item in playerState.PossiblePlayAnnoucements)
+                        {
+                            if (item.Type != "Belote" || (item.Type == "Belote" && item.CanAnnouceWith.Any(x => x.Value == this.cardToBePlayed.Value && x.Suit == this.cardToBePlayed.Suit)))
+                            {
+                                <li>
+                                    <input type="checkbox" @bind="item.Selected" @oninput="@((e)=>DeselectConflicting(item))" />
+                                    <b>@item.AnnoucementText</b>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <button @onclick="@(e=>PlayCard(this.cardToBePlayed))"> Confirm Announcment</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (playerState != null && playerState.ActionRequired == "ConfirmDeal")
+{
+    <div class="modal fade show  center-modal" id="myModal" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Deal</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <button @onclick="@Deal">Confirm Deal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (playerState != null && (playerState.ActionRequired == "ViewScoreRound" || playerState.ActionRequired == "ViewScoreGame"))
+{
+    <div class="modal fade show  center-modal" id="myModal" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    @if (playerState.ActionRequired == "ViewScoreRound")
+                    {
+                        <h4>Game Score Screen</h4>
+                    }
+                    else
+                    {
+                        <h4>Set Score Screen</h4>
+                    }
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">Team</div>
+                        <div class="col-md-4">Team1</div>
+                        <div class="col-md-4">Team2</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">Points From Cards</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamPointsFromCards[0]</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamPointsFromCards[1]</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">Points From Ann</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamPointsFromDispAnn[0]</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamPointsFromDispAnn[1]</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">Team Score</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamRoundScore[0]</div>
+                        <div class="col-md-4">@this.tableStateVm.CurrentRoundState.TeamRoundScore[1]</div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-4">Team</div>
+                        <div class="col-md-4">Team1</div>
+                        <div class="col-md-4">Team2</div>
+                    </div>
+                    @if (this.tableStateVm.CurrentGameScore[0].Count > 1)
+                    {
+                        <div class="row">
+
+                            <div class="col-md-4 offset-md-4">@this.tableStateVm.CurrentGameScore[0].Sum()</div>
+                            <div class="col-md-4">@this.tableStateVm.CurrentGameScore[1].Sum()</div>
+                        </div>
+                    }
+
+                    @if (playerState.ActionRequired == "ViewScoreGame")
+                    {
+                        <div class="row">
+
+                            <div class="col-md-4 offset-md-4">@this.tableStateVm.OveralScore[0]</div>
+                            <div class="col-md-4">@this.tableStateVm.OveralScore[1]</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Disconnect)
+{
+    <div class="modal fade show  center-modal" id="myModal" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Deal</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <button @onclick="@Disconect">Disconect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    private HubConnection hubConnection;
+    private GameStateVm gameSateVm;
+    public PlayerStateVm playerState;
+    public TableStateVm tableStateVm;
+    public CardVm cardToBePlayed;
+
+    public int LeftPlayerIndex;
+    public int TopPlayerIndex;
+    public int RightPlayerIndex;
+    public int BotPlayerIndex;
+
+    public bool Disconnect;
+
+    public string BotPlayerName { get { return this.tableStateVm != null ? this.tableStateVm.PlayerNames[this.BotPlayerIndex] : ""; } }
+    public string TopPlayerName { get { return this.tableStateVm != null ? this.tableStateVm.PlayerNames[this.TopPlayerIndex] : ""; } }
+    public string LeftPlayerName { get { return this.tableStateVm != null ? this.tableStateVm.PlayerNames[this.LeftPlayerIndex] : ""; } }
+    public string RightPlayerName { get { return this.tableStateVm != null ? this.tableStateVm.PlayerNames[this.RightPlayerIndex] : ""; } }
+
+    public int Team1Score { get { return this.tableStateVm != null ? this.tableStateVm.CurrentGameScore[0].Sum() : 0; } }
+    public int Team2Score { get { return this.tableStateVm != null ? this.tableStateVm.CurrentGameScore[1].Sum() : 0; } }
+
+    public int Team1SetScore { get { return this.tableStateVm != null ? this.tableStateVm.OveralScore[0] : 0; } }
+    public int Team2SetScore { get { return this.tableStateVm != null ? this.tableStateVm.OveralScore[1] : 0; } }
+
+    public string Prefix = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.BotPlayerIndex = int.Parse(this.Seat);
+        this.RightPlayerIndex = this.GetNextIndex(this.BotPlayerIndex);
+        this.TopPlayerIndex = this.GetNextIndex(this.RightPlayerIndex);
+        this.LeftPlayerIndex = this.GetNextIndex(this.TopPlayerIndex);
+
+
+
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/belotHub"))
+        .Build();
+
+        hubConnection.On<PlayerStateVm, string>(ChannelConstants.PlayerStateChange, (ps, eventName) =>
+        {
+            this.playerState = ps;
+            this.cardToBePlayed = null;
+            Console.WriteLine("PlayerStateChange");
+            Console.WriteLine(eventName);
+
+            //Console.WriteLine(ps.ActionRequired);
+            if (eventName == "NewPlayer")
+            {
+                Console.WriteLine("New Player");
+                Console.WriteLine(JsonConvert.SerializeObject(ps));
+            }
+            if (eventName == "GameStart")
+            {
+                Console.WriteLine("GameStart State Update");
+            }
+
+            if (eventName.Contains("Deal"))
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(ps));
+            }
+
+            if (eventName.Contains("Play"))
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(ps));
+            }
+
+            if (eventName.Contains("ViewScore"))
+            {
+                Console.WriteLine("ViewScore");
+                Console.WriteLine(JsonConvert.SerializeObject(ps));
+            }
+
+            this.StateHasChanged();
+        });
+
+        hubConnection.On<JoinGameRes>(ChannelConstants.JoinGameAnswer, (res) =>
+        {
+            Console.WriteLine("JoinRespons");
+            Console.WriteLine(res.Success);
+
+            this.StateHasChanged();
+        });
+
+        hubConnection.On<TableStateVm>(ChannelConstants.TableUpdate, (tu) =>
+        {
+            Console.WriteLine("TableUpdate");
+
+            //Console.WriteLine(JsonConvert.SerializeObject(tu));
+
+            if (tu.ActionRequied == "ViewScore")
+            {
+                Console.WriteLine("ViewScore - Table Update");
+                Console.WriteLine(JsonConvert.SerializeObject(tu));
+            }
+
+            this.tableStateVm = tu;
+            this.StateHasChanged();
+        });
+
+        hubConnection.On("Disconnect", () =>
+        {
+            Console.WriteLine("Disconnect");
+            Disconnect = true;
+            this.StateHasChanged();
+            return;
+        });
+
+
+        await hubConnection.StartAsync();
+
+        var joinReq = new JoinGameReq()
+        {
+            PlayerName = this.UserId,
+            GameName = this.GameName,
+            Seat = int.Parse(this.Seat)
+        };
+        await hubConnection.SendAsync("JoinGame", joinReq);
+    }
+
+    private int GetNextIndex(int number)
+    {
+        return (number + 3) % 4;
+    }
+
+
+
+    Task Deal()
+    {
+        return hubConnection.SendAsync("Deal", this.tableStateVm.GameId);
+    }
+
+    Task Disconect()
+    {
+        this.NavigationManager.NavigateTo("/");
+        return Task.FromResult(0);
+    }
+
+    Task Announce(string announce)
+    {
+        return hubConnection.SendAsync("Announce", this.tableStateVm.GameId, announce);
+    }
+
+    Task PlayCard(CardVm card)
+    {
+        Console.WriteLine("Card Clicked");
+        var t = this.playerState.PossiblePlayAnnoucements.Any(x => x.CanAnnouceWith.Any(y => y.Value == card.Value && y.Suit == card.Suit));
+        Console.WriteLine(t);
+        Console.WriteLine(JsonConvert.SerializeObject(this.playerState.PossibleBids));
+        if (!card.CanPlay)
+        {
+            return Task.FromResult(0);
+        }
+        else if (t && cardToBePlayed == null)
+        {
+            Console.WriteLine("Have To Set Cards");
+            Console.WriteLine(JsonConvert.SerializeObject(card));
+            this.cardToBePlayed = card;
+
+
+            foreach (var item in playerState.PossiblePlayAnnoucements)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(item));
+                Console.WriteLine(item.Type == "Seq" || (item.Type == "Belote" && item.CanAnnouceWith.Any(x => x.Value == this.cardToBePlayed.Value && x.Suit == this.cardToBePlayed.Suit)));
+            }
+            this.StateHasChanged();
+            return Task.FromResult(0);
+        }
+        else
+        {
+            Console.WriteLine("Card Played");
+            //this.playerState.Hand.ForEach(x => x.CanPlay = false);
+            //this.StateHasChanged();
+            return hubConnection.SendAsync("PlayCard", this.tableStateVm.GameId, card, this.playerState.PossiblePlayAnnoucements.Where(x => x.Selected).ToList());
+        }
+    }
+
+    Task DeselectConflicting(AnnouncementVm vm)
+    {
+        if (vm.Type != "Belote")
+        {
+            this.playerState.PossiblePlayAnnoucements.ForEach(x => x.Selected = !x.Selected ? false : !x.ConflictsWith.Contains(vm.Id));
+        }
+
+        this.StateHasChanged();
+        return Task.FromResult(0);
+    }
+
+    [Parameter]
+    public string GameName { get; set; }
+
+    [Parameter]
+    public string UserId { get; set; }
+
+    [Parameter]
+    public string Seat { get; set; }
+}

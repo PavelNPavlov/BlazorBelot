@@ -1,0 +1,246 @@
+﻿
+$baseCardW: 71px;
+$baseCardH: 97px;
+
+$multiplier: 1.5;
+
+$cardW: $baseCardW*$multiplier;
+$cardH: $baseCardH*$multiplier;
+
+$wOffset: -3px;
+$hOffset: 0px;
+
+
+$cols: 18;
+$rows: 3;
+
+$spriteWidth: $cardW*$cols;
+$spriteHeith: $cardH*$rows;
+
+$bg: url("../wwwroot/img/AllCards3.png");
+
+.alc_normal-cs {
+    width: $cardW;
+    height: $cardH;
+    background-size: $spriteWidth $spriteHeith !important
+}
+
+//heart
+.alc_ace_hearts {
+    background: $bg -2*$cardW -0*$cardH
+}
+
+.alc_two_hearts {
+    background: $bg -1*$cardW -0*$cardH
+}
+
+.alc_three_hearts {
+    background: $bg -0*$cardW -0*$cardH
+}
+
+.alc_four_hearts {
+    background: $bg -2*$cardW -1*$cardH
+}
+
+
+.alc_five_hearts {
+    background: $bg -1*$cardW -1*$cardH
+}
+
+.alc_six_hearts {
+    background: $bg -0*$cardW -1*$cardH
+}
+
+.alc_seven_hearts {
+    background: $bg -2*$cardW -2*$cardH
+}
+
+.alc_eight_hearts {
+    background: $bg -1*$cardW -2*$cardH
+}
+
+.alc_nine_hearts {
+    background: $bg -0*$cardW -2*$cardH
+}
+
+.alc_ten_hearts {
+    background: $bg -17*$cardW -0*$cardH
+}
+
+.alc_jack_hearts {
+    background: $bg -16*$cardW -0*$cardH
+}
+
+.alc_queen_hearts {
+    background: $bg -15*$cardW -0*$cardH
+}
+
+.alc_king_hearts {
+    background: $bg -17*$cardW -1*$cardH
+}
+
+//dimonds
+.alc_ace_diamonds {
+    background: $bg -6*$cardW -0*$cardH
+}
+
+.alc_two_diamonds {
+    background: $bg -7*$cardW -0*$cardH
+}
+
+.alc_three_diamonds {
+    background: $bg -8*$cardW -0*$cardH
+}
+
+.alc_four_diamonds {
+    background: $bg -9*$cardW -2*$cardH
+}
+
+.alc_five_diamonds {
+    background: $bg -10*$cardW -2*$cardH
+}
+
+.alc_six_diamonds {
+    background: $bg -11*$cardW -2*$cardH
+}
+
+
+.alc_seven_diamonds {
+    background: $bg -9*$cardW -1*$cardH
+}
+
+.alc_eight_diamonds {
+    background: $bg -10*$cardW -1*$cardH
+}
+
+.alc_nine_diamonds {
+    background: $bg -11*$cardW -1*$cardH
+}
+
+.alc_ten_diamonds {
+    background: $bg -9*$cardW -0*$cardH
+}
+
+.alc_jack_diamonds {
+    background: $bg -10*$cardW -0*$cardH
+}
+
+.alc_queen_diamonds {
+    background: $bg -11*$cardW -0*$cardH
+}
+
+.alc_king_diamonds {
+    background: $bg -12*$cardW -2*$cardH
+}
+
+
+//spade
+.alc_ace_spades {
+    background: $bg -4*$cardW -2*$cardH
+}
+
+.alc_two_spades {
+    background: $bg -3*$cardW -1*$cardH
+}
+
+.alc_three_spades {
+    background: $bg -4*$cardW -1*$cardH
+}
+
+.alc_four_spades {
+    background: $bg -5*$cardW -1*$cardH
+}
+
+.alc_five_spades {
+    background: $bg -3*$cardW -0*$cardH
+}
+
+.alc_six_spades {
+    background: $bg -4*$cardW -0*$cardH
+}
+
+
+.alc_seven_spades {
+    background: $bg -5*$cardW -0*$cardH
+}
+
+.alc_eight_spades {
+    background: $bg -6*$cardW -2*$cardH
+}
+
+.alc_nine_spades {
+    background: $bg -7*$cardW -2*$cardH
+}
+
+.alc_ten_spades {
+    background: $bg -8*$cardW -2*$cardH
+}
+
+.alc_jack_spades {
+    background: $bg -6*$cardW -1*$cardH
+}
+
+.alc_queen_spades {
+    background: $bg -7*$cardW -1*$cardH
+}
+
+.alc_king_spades {
+    background: $bg -8*$cardW -1*$cardH
+}
+
+//end of spades
+
+
+.alc_ace_clubs {
+    background: $bg -16*$cardW -1*$cardH
+}
+
+.alc_two_clubs {
+    background: $bg -15*$cardW -1*$cardH
+}
+
+.alc_three_clubs {
+    background: $bg -17*$cardW -2*$cardH
+}
+
+.alc_four_clubs {
+    background: $bg -16*$cardW -2*$cardH
+}
+
+.alc_five_clubs {
+    background: $bg -15*$cardW -2*$cardH
+}
+
+.alc_six_clubs {
+    background: $bg -14*$cardW -0*$cardH
+}
+
+.alc_seven_clubs {
+    background: $bg -13*$cardW -0*$cardH
+}
+
+.alc_eight_clubs {
+    background: $bg -12*$cardW -0*$cardH
+}
+
+.alc_nine_clubs {
+    background: $bg -14*$cardW -1*$cardH
+}
+
+.alc_ten_clubs {
+    background: $bg -13*$cardW -1*$cardH
+}
+
+.alc_jack_clubs {
+    background: $bg -12*$cardW -1*$cardH
+}
+
+.alc_queen_clubs {
+    background: $bg -14*$cardW -2*$cardH
+}
+
+.alc_king_clubs {
+    background: $bg -13*$cardW -2*$cardH
+}
+
+

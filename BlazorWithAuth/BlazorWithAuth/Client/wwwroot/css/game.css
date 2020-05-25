@@ -1,0 +1,86 @@
+﻿div#play-area {
+    height: 35%;
+    width: 35%;
+    /*background-color: red;*/
+    left: 32.5%;
+    top: 24%;
+    /*opacity: 0.5;*/
+    position:absolute;
+}
+
+div#bot-player {
+    top: 70%;
+    height: 20%;
+}
+
+div#top-player {
+    width: 15%;
+    height: 15%;
+    left: 41%;
+    top: 0%;
+}
+
+div#right-player {
+    right: 0%;
+    width: 15%;
+}
+
+div#left-player {
+    left: 0%;
+    width: 15%;
+}
+
+div.player-area {
+    /*opacity: 0.5;*/
+    width: 45%;
+    height: 18%;
+    position: absolute;
+}
+
+.own-team {
+    background-color: blue;
+    left: 27%
+}
+
+.other-team {
+    background-color: green;
+    top: 30%; 
+    height: 15%;
+    width: 15%;
+}
+
+#game {
+    height: 84vh;
+    position: relative;
+}
+
+.center-modal {
+    padding-top: 20%;
+    padding-left: 15%;
+}
+
+.sp-bb {
+    background-color: white;
+    padding: 3px;
+    border-radius: 3px;
+    min-width: 100px;
+}
+
+.top-p{
+    background-color:green;
+}
+
+.card-name {
+    display: block;
+    margin-top: -20px;
+    color: white;
+}
+
+.tabel-bg{
+    background: url("../img/table.jpg") center no-repeat; 
+    background-size: cover;
+}
+
+.white-bg{
+    background-color:white;
+}
